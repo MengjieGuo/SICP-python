@@ -5,6 +5,9 @@
 # @File : 03.py
 # @Software : PyCharm
 
+"""
+第二周的话 Mon 1/22 pdf部分有比较多的可读部分
+"""
 # 这里从问题Q7开始
 """Q7"""
 

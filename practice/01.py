@@ -5,6 +5,10 @@
 # @File : 01.py
 # @Software : PyCharm
 
+"""
+第一种的可读部分是 reading 部分，lecture 部分没有可读内容
+homework部分是 handout 和 project 部分
+ """
 
 from operator import add, sub
 
