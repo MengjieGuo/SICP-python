@@ -16,12 +16,27 @@ def roll_dice(num_rolls, dice=six_sided):
 
     num_rolls:  The number of dice rolls that will be made.
     dice:       A function that simulates a single dice roll outcome.
+
+    本来打算使用range生成一个list，然后计算list中的和、判断是否有1
     """
     # These assert statements ensure that num_rolls is a positive integer.
     assert type(num_rolls) == int, 'num_rolls must be an integer.'
     assert num_rolls > 0, 'Must roll at least once.'
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
+    assert num_rolls <= 10, 'Must roll smaller 11'
+    count = 0
+    roll_result = 0
+    flag = False
+    while count < num_rolls:
+        number = dice()
+        if number == 1:
+            flag = True
+        roll_result += number
+        count += 1
+    if flag:
+        roll_result = 1
+    return roll_result
     # END PROBLEM 1
 
 
@@ -33,6 +48,10 @@ def free_bacon(score):
     assert score < 100, 'The game should be over.'
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
+    assert score >= 0, 'Thee score must ge than 0'
+    a = score // 10
+    b = score % 10
+    return 2 + abs(a-b)
     # END PROBLEM 2
 
 

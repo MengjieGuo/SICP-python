@@ -7,11 +7,10 @@ test = {
         {
           'code': r"""
           >>> take_turn(2, 0, make_test_dice(4, 6, 1))
-          70e71b420a966665c548a3bb2cb30d7d
-          # locked
+          10
           """,
           'hidden': False,
-          'locked': True
+          'locked': False
         },
         {
           'code': r"""
