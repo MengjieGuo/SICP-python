@@ -62,6 +62,11 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
     num_rolls:       The number of dice rolls that will be made.
     opponent_score:  The total score of the opponent.
     dice:            A function that simulates a single dice roll outcome.
+
+    因为返回的是当前player的得分，所以需要考虑以下情况：
+    1、当前player选择掷骰子0分，直接返回 opponent_score 的应用规则2。
+    2、当前player掷骰子有1分，返回1分。
+    3、前两个受到dice函数影响。
     """
     # Leave these assert statements here; they help check for errors.
     assert type(num_rolls) == int, 'num_rolls must be an integer.'
@@ -70,13 +75,30 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
     assert opponent_score < 100, 'The game should be over.'
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
+    if num_rolls == 0:
+        return free_bacon(opponent_score)
+    return roll_dice(num_rolls, dice=dice)
     # END PROBLEM 3
 
 
 def is_swap(score0, score1):
-    """Return whether one of the scores is an integer multiple of the other."""
+    """Return whether one of the scores is an integer multiple of the other.
+
+    规则是这样：
+    1、双方是否有为0或者1的分数，如果有就不交换
+    2、双方是否是对方的整数倍，如果是就交换
+    """
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    if score0 in [0, 1] or score1 in [0, 1]:
+        return False
+    a = score0 % score1
+    if a == 0:
+        return True
+    b = score1 % score0
+    if b == 0:
+        return True
+    return False
     # END PROBLEM 4
 
 
