@@ -90,13 +90,39 @@ def accumulate(combiner, base, n, term):
     72
     """
     "*** YOUR CODE HERE ***"
-
+    """
+    使用递归思想
+        先求 add(base, 剩余n-1和)
+        再求 add(base, add(base, 剩余其他n-2和))
+        
+        像这样的
+        combiner(base, accumulate(combiner, term(n), n-1, term))
+        计算是从n开始知道1为止
+        if n <= 1:
+            return combiner(base, term(1)) 
+        
+    """
+    """
     i = 1
     result = base
     while i <= n:
         result = combiner(result, term(i))
         i += 1
     return result
+    """
+    """
+    重写
+    """
+    if n == 0:
+        return combiner(base, term(0))
+    if n == 1:
+        return combiner(base, term(1))
+    return accumulate(combiner, combiner(base, term(n)), n-1, term)
+"""
+add(0, add(5, add(4, add(3, add(2, 1))))))
+"""
+if __name__ == '__main__':
+    print(accumulate(add, 0, 5, identity))
 
 def summation_using_accumulate(n, term):
     """Returns the sum of term(1) + ... + term(n). The implementation
@@ -154,7 +180,11 @@ def filtered_accumulate(combiner, base, pred, n, term):
     True
     """
     def combine_if(x, y):
-        "*** YOUR CODE HERE ***"
+        "*** YOUR CODE HERE ***应该是对参数y进行处理，看是否满足filtered_accumulate的参数pred"
+        if pred(y):
+            return combiner(x, y)
+        else:
+            return x
     return accumulate(combine_if, base, n, term)
 
 def odd(x):
@@ -179,11 +209,40 @@ def make_repeater(f, n):
     5
     """
     "*** YOUR CODE HERE ***"
+    """
+    if a = make_repeater(increments, 1) return increment(x), if call a(5) will get 5+1
+    if a = make_repeater(increments, 2) return increment(increment(x)), will get (5+1)+1
+    递归是要有边界条件的
+    递归结束的条件是n达到某个值，在这里是1
+    如果返回 increment(increment) 也就是 f(f)是会报错的，这里需要里面的f是一个可以接收参数的函数。。。
+    一开始只使用compose无法满足条件所以这里想到使用 compose1 返回的就是可以接收一个参数的函数
+    
+    结束条件是 compose(f, f) , 这里是2次调用，所以结束的n要变大
+    
+    最后一个测试用例没有通过，n为0，所以需要加入判断条件，如果n=0则返回参数，这。。。要不仿照compose1再写一个
+    """
+    if n == 0:
+        return return_x()
+    if n <= 2:
+        return compose1(f, f)
+    return compose1(f, make_repeater(f, n-1))
+
+    """
+    如果使用accumulate 和 compose1 实现单行的return
+    
+    回顾下 accumulate 的作用，有个操作函数f, 有个base，有个n，有个函数g，对1到n分别求g(x), 然后对所有的结果求f(x, y)
+    """
+
 
 def compose1(f, g):
     """Return a function h, such that h(x) = f(g(x))."""
     def h(x):
         return f(g(x))
+    return h
+
+def return_x():
+    def h(x):
+        return x
     return h
 
 ###################
@@ -253,9 +312,21 @@ def pow_church(m, n):
     """
     "*** YOUR CODE HERE ***"
 
-if __name__ == '__main__':
-    a = accumulate(mul, 1, 4, square)
-    a = accumulate(mul, 1, 6, triple)
+# if __name__ == '__main__':
+#     # a = accumulate(mul, 1, 4, square)
+#     # a = accumulate(mul, 1, 6, triple)
+#     # add_three = make_repeater(increment, 3)
+#     # print(add_three(5))
+#     a = make_repeater(increment, 2)
+#     print(a(5))
 
+    """
+    test  make_repeater
+    # b = increment(increment(1))
+    # print(b)
+    # a = square
+    # c = square(a)
+    # print(c('x'))
+    # 现在的思路，是错误的。
+    """
 
-    print(a)
