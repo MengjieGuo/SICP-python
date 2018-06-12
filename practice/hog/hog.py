@@ -255,6 +255,7 @@ def make_averaged(fn, num_samples=1000):
     # END PROBLEM 8
 
 
+
 def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
     """Return the number of dice (1 to 10) that gives the highest average turn
     score by calling roll_dice with the provided DICE over NUM_SAMPLES times.
