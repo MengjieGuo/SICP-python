@@ -1,4 +1,7 @@
+from math import sqrt
+
 HW_SOURCE_FILE = 'hw04.py'
+
 
 ###############
 #  Questions  #
@@ -6,15 +9,19 @@ HW_SOURCE_FILE = 'hw04.py'
 
 def intersection(st, ave):
     """Represent an intersection using the Cantor pairing function."""
-    return (st+ave)*(st+ave+1)//2 + ave
+    return (st + ave) * (st + ave + 1) // 2 + ave
+
 
 def street(inter):
     return w(inter) - avenue(inter)
 
+
 def avenue(inter):
     return inter - (w(inter) ** 2 + w(inter)) // 2
 
-w = lambda z: int(((8*z+1)**0.5-1)/2)
+
+w = lambda z: int(((8 * z + 1) ** 0.5 - 1) / 2)
+
 
 def taxicab(a, b):
     """Return the taxicab distance between two intersections.
@@ -27,6 +34,15 @@ def taxicab(a, b):
     9
     """
     "*** YOUR CODE HERE ***"
+    """"""
+    return abs(street(a) - street(b)) + abs(avenue(a) - avenue(b))
+
+
+# if __name__ == '__main__':
+#     times_square = intersection(46, 7)
+#     ess_a_bagel = intersection(51, 3)
+#     print(taxicab(times_square, ess_a_bagel))
+
 
 def squares(s):
     """Returns a new list containing square roots of the elements of the
@@ -40,6 +56,20 @@ def squares(s):
     []
     """
     "*** YOUR CODE HERE ***"
+    #   [round(sqrt(a)) for a in s] we got [3, 7, 3, 3, 1, 1, 10, 10]
+
+    # return list(set([round(sqrt(a)) for a in s]))
+g
+
+# if __name__ == '__main__':
+#     s = [8, 49, 8, 9, 2, 1, 100, 102]
+#     s = [500, 30]
+#     print([round(sqrt(a)) for a in s])
+#     print(list(set([round(sqrt(a)) for a in s])))
+
+
+"""很明显，一个用迭代实现，一个使用循环实现"""
+
 
 def g(n):
     """Return the value of G(n), computed recursively.
@@ -59,6 +89,10 @@ def g(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    if n <= 3:
+        return n
+    return g(n - 1) + 2 * g(n - 2) + 3 * g(n - 3)
+
 
 def g_iter(n):
     """Return the value of G(n), computed iteratively.
@@ -78,6 +112,19 @@ def g_iter(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    if n <= 3:
+        return n
+    sum = 1 * g(n - 1) + 2 * g(n - 2) + 3 * g(n - 3)
+    return sum
+
+
+if __name__ == '__main__':
+    print(g_iter(1))
+    print(g_iter(2))
+    print(g_iter(3))
+    print(g_iter(4))
+    print(g_iter(5))
+
 
 def pingpong(n):
     """Return the nth element of the ping-pong sequence.
@@ -111,6 +158,9 @@ def pingpong(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    """根据提示，需要定义一个函数，返回生成的序列，然后生成的第n个就是要返回的值"""
+
+
 
 def has_seven(k):
     """Returns True if at least one of the digits of k is a 7, False otherwise.
@@ -135,6 +185,7 @@ def has_seven(k):
     else:
         return has_seven(k // 10)
 
+
 def count_change(amount):
     """Return the number of ways to make change for amount.
 
@@ -149,11 +200,13 @@ def count_change(amount):
     """
     "*** YOUR CODE HERE ***"
 
+
 ###################
 # Extra Questions #
 ###################
 
 from operator import sub, mul
+
 
 def make_anonymous_factorial():
     """Return the value of an expression that computes factorial.
