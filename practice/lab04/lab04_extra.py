@@ -1,6 +1,7 @@
 """ Lab 04 Optional Questions """
-
+import itertools
 from lab04 import *
+
 
 # Q6
 def flatten(lst):
@@ -16,6 +17,21 @@ def flatten(lst):
     [1, 1, 1, 1, 1, 1]
     """
     "*** YOUR CODE HERE ***"
+    """接受list返回list
+    使用递归
+    如果元素是list需要调用自己，返回l
+    
+    flat=lambda L: sum(map(flat,L),[]) if isinstance(L,list) else [L]
+
+    """
+    li = []
+    for item in lst:
+        if type(item) == list:
+            li.extend(flatten(item))
+        else:
+            li.append(item)
+    return li
+
 
 # Q7
 def merge(lst1, lst2):
@@ -31,7 +47,20 @@ def merge(lst1, lst2):
     [2, 4, 5, 6, 7]
     """
     "*** YOUR CODE HERE ***"
+    """集合直接能够进行交集，并集，差集，补集的运算 两个set的并集 | 或者 union
+    & 是交集
+    - 是差集
+    ^ 是补集
+    """
+    return list(set(lst1) | set(lst2))
 
+
+# if __name__ == '__main__':
+#     a, b = [1, 2], [2, 3, 4]
+#     a = set(a)
+#     b = set(b)
+#     c = a | b
+#     print(c)
 ######################
 ### Connect N Game ###
 ######################
@@ -44,6 +73,11 @@ def create_row(size):
     ['-', '-', '-', '-', '-']
     """
     "*** YOUR CODE HERE ***"
+    # lst = []
+    # for i in range(size):
+    #     lst += ['-']
+    # return lst
+    return ['-' for i in range(size)]
 
 
 def create_board(rows, columns):
@@ -53,6 +87,7 @@ def create_board(rows, columns):
     [['-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-'], ['-', '-', '-', '-', '-']]
     """
     "*** YOUR CODE HERE ***"
+    return [create_row(columns) for i in range(rows)]
 
 
 def replace_elem(lst, index, elem):
@@ -68,6 +103,10 @@ def replace_elem(lst, index, elem):
     """
     assert index >= 0 and index < len(lst), 'Index is out of bounds'
     "*** YOUR CODE HERE ***"
+    """注意到 old 不是 new所以需要产生一个副本，方式可以是使用list()方法，也可以使用切片"""
+    lst = list(lst)  # lst = lst[:]
+    lst[index] = elem
+    return lst
 
 
 def get_piece(board, row, column):
@@ -83,6 +122,7 @@ def get_piece(board, row, column):
     '-'
     """
     "*** YOUR CODE HERE ***"
+    return board[row][column]
 
 
 def put_piece(board, max_rows, column, player):
@@ -106,7 +146,29 @@ def put_piece(board, max_rows, column, player):
     -1
     """
     "*** YOUR CODE HERE ***"
+    """
+    1 找到最后不为空的行，返回上一行的索引
+    2 如果不是-1就更新上一行的值
+    3 返回tuple
+    """
+    blank_idx = -1
+    for idx, val in enumerate(board):
+        if val[column] in ['X', 'O']:
+            blank_idx = idx - 1
+            break
+        else:
+            blank_idx = idx
+    if blank_idx != -1:
+        board[blank_idx][column] = player
+    return (blank_idx, board)
 
+
+# if __name__ == '__main__':
+#     rows, columns = 2, 2
+#     board = create_board(rows, columns)
+#     row, new_board = put_piece(board, rows, 0, 'X')
+#     row, new_board = put_piece(new_board, rows, 0, 'O')
+#     row, new_board = put_piece(new_board, rows, 0, 'X')
 
 def make_move(board, max_rows, max_cols, col, player):
     """Put player's piece in column COL of the board, if it is a valid move.
@@ -134,6 +196,12 @@ def make_move(board, max_rows, max_cols, col, player):
     -1
     """
     "*** YOUR CODE HERE ***"
+    """与 put_piece 的区别 是 COL可能是无效的"""
+    if max_cols <= col or col < 0:
+        return (-1, board)
+    else:
+        return put_piece(board, max_rows, col, player)
+
 
 def print_board(board, max_rows, max_cols):
     """Prints the board. Row 0 is at the top, and column 0 at the far left.
@@ -149,6 +217,20 @@ def print_board(board, max_rows, max_cols):
     X -
     """
     "*** YOUR CODE HERE ***"
+    for m in board:
+        st = ''
+        for n in m:
+            st += n + ' '
+        print(st[:-1])
+
+
+        # if __name__ == '__main__':
+        #     rows, columns = 2, 2
+        #     board = create_board(rows, columns)
+        #     print_board(board, rows, columns)
+        # new_board = make_move(board, rows, columns, 0, 'X')[1]
+        # print_board(new_board, rows, columns)
+
 
 def check_win_row(board, max_rows, max_cols, num_connect, row, player):
     """ Returns True if the given player has a horizontal win
@@ -173,6 +255,31 @@ def check_win_row(board, max_rows, max_cols, num_connect, row, player):
     False
     """
     "*** YOUR CODE HERE ***"
+    """检查第row行有num_connect个player连着就返回True，否则返回False"""
+    flag = 0
+    for a in board[row]:
+        flag = flag + 1 if a == player else 0
+        if flag == num_connect:
+            return True
+    return False
+
+    # tmp_count = [(k, len(list(v))) for k, v in itertools.groupby(board[row])]
+    # print(tmp_count)
+    # for a in tmp_count:
+    #     if a[0] == player:
+    #         if a[1] >= num_connect:
+    #             return True
+    # return False
+
+
+#
+# if __name__ == '__main__':
+#     rows, columns, num_connect = 4, 4, 2
+#     board = create_board(rows, columns)
+#     board = make_move(board, rows, columns, 0, 'X')[1]
+#     board = make_move(board, rows, columns, 0, 'O')[1]
+#     check_win_row(board, rows, columns, num_connect, 3, 'O')
+#     board = make_move(board, rows, columns, 2, 'X')[1]
 
 def check_win_column(board, max_rows, max_cols, num_connect, col, player):
     """ Returns True if the given player has a vertical win in the given column,
@@ -198,6 +305,28 @@ def check_win_column(board, max_rows, max_cols, num_connect, col, player):
     False
     """
     "*** YOUR CODE HERE ***"
+    flag = 0
+    for a in board:
+        flag = flag + 1 if a[col] == player else 0
+        if flag == num_connect:
+            return True
+    return False
+
+
+# if __name__ == '__main__':
+#     rows, columns, num_connect = 5, 5, 2
+#     board = create_board(rows, columns)
+#     board = make_move(board, rows, columns, 0, 'X')[1]
+#     board = make_move(board, rows, columns, 1, 'O')[1]
+#     check_win_column(board, rows, columns, num_connect, 0, 'X')
+#
+#     board = make_move(board, rows, columns, 1, 'X')[1]
+#     board = make_move(board, rows, columns, 1, 'O')[1]
+#     check_win_column(board, rows, columns, num_connect, 1, 'O')
+#
+#     board = make_move(board, rows, columns, 2, 'X')[1]
+#     board = make_move(board, rows, columns, 1, 'O')[1]
+#     check_win_column(board, rows, columns, num_connect, 1, 'O')
 
 def check_win(board, max_rows, max_cols, num_connect, row, col, player):
     """Returns True if the given player has any kind of win after placing a
@@ -234,6 +363,18 @@ def check_win(board, max_rows, max_cols, num_connect, row, col, player):
     diagonal_win = check_win_diagonal(board, max_rows, max_cols, num_connect,
                                       row, col, player)
     "*** YOUR CODE HERE ***"
+    if diagonal_win:
+        return True
+    else:
+        row_win = check_win_row(board, max_rows, max_cols, num_connect, row, player)
+        if row_win:
+            return True
+        else:
+            col_win = check_win_column(board, max_rows, max_cols, num_connect, col, player)
+            if col_win:
+                return True
+    return False
+
 
 ###############################################################
 ### Functions for reference when solving the other problems ###
@@ -283,11 +424,13 @@ def check_win_diagonal(board, max_rows, max_cols, num_connect, row, col, player)
 
     return False
 
+
 #####################################################################################
 ### You do not need to read or understand the following code for this assignment. ###
 #####################################################################################
 
 import sys
+
 
 def other(player):
     """ Returns the given player's opponent.
@@ -295,6 +438,7 @@ def other(player):
     if player == 'X':
         return 'O'
     return 'X'
+
 
 def play(board, max_rows, max_cols, num_connect):
     max_turns = max_rows * max_cols
@@ -331,6 +475,7 @@ def play(board, max_rows, max_cols, num_connect):
 
         who = other(who)
 
+
 def start_game():
     # Get all parameters for the game from user.
     while True:
@@ -346,7 +491,7 @@ def start_game():
         # Get number of rows for board from user.
         while True:
             try:
-                 max_rows = int(input('How many rows? '))
+                max_rows = int(input('How many rows? '))
             except ValueError as e:
                 print('Invalid input. Please try again.')
                 continue
