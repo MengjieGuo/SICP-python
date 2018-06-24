@@ -9,6 +9,8 @@ from visualize import draw_map
 ##################################
 # Phase 2: Unsupervised Learning #
 ##################################
+from practice.maps.abstractions import make_restaurant, make_review, restaurant_location, restaurant_name, user_rating, \
+    restaurant_categories
 
 
 def find_closest(location, centroids):
@@ -20,7 +22,16 @@ def find_closest(location, centroids):
     """
     # BEGIN Question 3
     "*** YOUR CODE HERE ***"
+    """distance返回欧几里得距离， min 还是 sorted ， 使用 min 并指定 key 为新数据结构的 distance"""
+    distance_data = [[a, distance(location, a)] for a in centroids]
+    return min(distance_data, key=lambda x: x[1])[0]  # 这里按照从小到大排序
+    # 看到网友有更简短的代码     return min(centroids, key=lambda x: distance(x, location))
     # END Question 3
+
+
+# if __name__ == '__main__':
+#     min_distance = find_closest([3.0, 4.0], [[0.0, 0.0], [2.0, 3.0], [4.0, 3.0], [5.0, 5.0]])
+#     print(min_distance)
 
 
 def group_by_first(pairs):
@@ -29,7 +40,7 @@ def group_by_first(pairs):
 
     Arguments:
     pairs -- a sequence of pairs
-
+    将 pairs 中 key 相同的 value 组成一个list，最终是 list of list。
     >>> example = [ [1, 2], [3, 2], [2, 4], [1, 3], [3, 1], [1, 2] ]
     >>> group_by_first(example)
     [[2, 3, 2], [2, 1], [4]]
@@ -49,13 +60,48 @@ def group_by_centroid(restaurants, centroids):
     """
     # BEGIN Question 4
     "*** YOUR CODE HERE ***"
+    # python风格的代码
+    """对 group_by_first 来说这里的 key 就是距离最近的 centroids， value 是 restaurants
+     所以需要先构造    group_by_first 的参数
+     最后求得的就是 以 某 centroids 最近的 所有 restaurants 的 list
+     餐厅集群
+    """
+    return group_by_first(
+        [[find_closest(restaurant_location(restaurant), centroids), restaurant] for restaurant in restaurants])
+    # 下面是拆分后的
+    # pairs_collector = []
+    # for r in restaurants:
+    #     location = restaurant_location(r)
+    #     pair = [find_closest(location, centroids), r]
+    #     pairs_collector.append(pair)
+    # print(pairs_collector)
+    # return group_by_first(pairs_collector)
     # END Question 4
+
+
+#
+# if __name__ == '__main__':
+#     r1 = make_restaurant('A', [-10, 2], [], 2, [
+#         make_review('A', 4), ])
+#     r2 = make_restaurant('B', [-9, 1], [], 3, [
+#         make_review('B', 5),
+#         make_review('B', 3.5), ])
+#     c1 = [0, 0]
+#     groups = group_by_centroid([r1, r2], [c1])
+#     print(groups)
 
 
 def find_centroid(cluster):
     """Return the centroid of the locations of the restaurants in cluster."""
     # BEGIN Question 5
+    # 返回集群中餐厅位置的质心。对餐厅集群来说，质心是：[所有餐厅横坐标的平均值，所有餐厅纵坐标的平均值]
+    # [mean(), mean()]
+    # 然后所有餐厅的横坐标 [restaurant_location(restaurant)[0] for restaurant in cluster]
+    # 同理，所有餐厅的纵坐标 [restaurant_location(restaurant)[1] for restaurant in cluster]
+
     "*** YOUR CODE HERE ***"
+    return [mean([restaurant_location(restaurant)[0] for restaurant in cluster]),
+            mean([restaurant_location(restaurant)[1] for restaurant in cluster])]
     # END Question 5
 
 
@@ -70,6 +116,8 @@ def k_means(restaurants, k, max_updates=100):
         old_centroids = centroids
         # BEGIN Question 6
         "*** YOUR CODE HERE ***"
+        grouped = group_by_centroid(restaurants, old_centroids)
+        centroids = [find_centroid(c) for c in grouped]
         # END Question 6
         n += 1
     return centroids
@@ -95,9 +143,23 @@ def find_predictor(user, restaurants, feature_fn):
 
     xs = [feature_fn(r) for r in restaurants]
     ys = [reviews_by_user[restaurant_name(r)] for r in restaurants]
+    # 1) the extracted feature value for each restaurant in restaurants
+    # Q: What does the list ys represent? 0) user's ratings for the restaurants in restaurants
 
     # BEGIN Question 7
-    b, a, r_squared = 0, 0, 0  # REPLACE THIS LINE WITH YOUR SOLUTION
+    """这里主要还是根据提示进行
+        需要求 Sxx Syy Sxy 
+        然后求 b a R^2
+    """
+    b, a, r_squared = 0, 0, 0  # REPLACE THIS LINE WITH2 YOUR SOLUTION
+    zipped_xy = zip(xs, ys)
+    Sxx = sum([pow(x - mean(xs), 2) for x in xs])
+    Syy = sum([pow(y - mean(ys), 2) for y in ys])
+    Sxy = sum([(x - mean(xs)) * (y - mean(ys)) for x, y in zipped_xy])
+    b = Sxy / Sxx
+    a = mean(ys) - b * mean(xs)
+    r_squared = pow(Sxy, 2) / (Sxx * Syy)
+
     # END Question 7
 
     def predictor(restaurant):
@@ -118,6 +180,7 @@ def best_predictor(user, restaurants, feature_fns):
     reviewed = user_reviewed_restaurants(user, restaurants)
     # BEGIN Question 8
     "*** YOUR CODE HERE ***"
+    return max([find_predictor(user, reviewed, f) for f in feature_fns], key=lambda x: x[1])[0]
     # END Question 8
 
 
@@ -134,6 +197,8 @@ def rate_all(user, restaurants, feature_fns):
     reviewed = user_reviewed_restaurants(user, restaurants)
     # BEGIN Question 9
     "*** YOUR CODE HERE ***"
+    return {restaurant_name(r): user_rating(user, restaurant_name(r))
+            if r in reviewed else predictor(r) for r in restaurants}
     # END Question 9
 
 
@@ -146,6 +211,8 @@ def search(query, restaurants):
     """
     # BEGIN Question 10
     "*** YOUR CODE HERE ***"
+    return [r for r in restaurants if query in restaurant_categories(r)]
+
     # END Question 10
 
 
